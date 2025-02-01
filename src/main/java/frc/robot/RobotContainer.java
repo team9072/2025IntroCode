@@ -39,6 +39,8 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
+  public Object moveLCommand;
+
 
   public DriveSubsystem getDrive() {
     return m_robotDrive;
@@ -59,7 +61,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
+                true, false),
             m_robotDrive));
   }
 
@@ -75,12 +77,61 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(m_driverController, Button.kLeftStick.value)
         .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
+            () -> 
+            m_robotDrive.setX(),
             m_robotDrive));
+
     new JoystickButton(m_driverController, Button.kX.value)
         .whileTrue(new RunCommand(
-            () -> m_robotDrive.resetOdometry(new Pose2d()), m_robotDrive));
+            () -> 
+            m_robotDrive.resetOdometry(new Pose2d()),
+             m_robotDrive));
+
+            new JoystickButton(m_driverController, Button.kA.value)
+              .toggleOnTrue(moveLCommand());
+ 
   }
+              public Command moveLCommand() {
+                TrajectoryConfig config = new TrajectoryConfig(
+                  AutoConstants.kMaxSpeedMetersPerSecond,
+                  AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                  // Add kinematics to ensure max speed is actually obeyed
+                  .setKinematics(DriveConstants.kDriveKinematics);
+          
+              // An example trajectory to follow. All units in meters.
+              Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+                  // Start at the origin facing the +X direction
+                  new Pose2d(0, 0, new Rotation2d(0)),
+                  // Move up by .5 meters and then left by .5 meters in an "L" pattern
+                  List.of(new Translation2d(0.5, 0), new Translation2d(0.5, 0.5)),
+                  // End .5 meters up and.5 meters left with the inital rotation.
+                  new Pose2d(0.5, 0.5, new Rotation2d(Math.PI)),
+                  config);
+          
+              var thetaController = new ProfiledPIDController(
+                  AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+              thetaController.enableContinuousInput(-Math.PI, Math.PI);
+          
+              SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+                  exampleTrajectory,
+                  m_robotDrive::getPose, // Functional interface to feed supplier
+                  DriveConstants.kDriveKinematics,
+          
+                  // Position controllers
+                  new PIDController(AutoConstants.kPXController, 0, 0),
+                  new PIDController(AutoConstants.kPYController, 0, 0),
+                  thetaController,
+                  m_robotDrive::setModuleStates,
+                  m_robotDrive);
+          
+              // Reset odometry to the starting pose of the trajectory.
+              m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+          
+              // Run path following command, then stop at the end.
+              return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+            }
+              
+              
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -100,9 +151,9 @@ public class RobotContainer {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        List.of(new Translation2d(0.5, 0.5), new Translation2d(1, -0.5)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
+        new Pose2d(1.5, 0, new Rotation2d(0)),
         config);
 
     var thetaController = new ProfiledPIDController(

@@ -170,10 +170,11 @@ public class DriveSubsystem extends SubsystemBase {
       m_currentRotation = rot;
     }
 
+    double rateAdjustment = 0.2;
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+    double xSpeedDelivered = rateAdjustment * xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
+    double ySpeedDelivered = rateAdjustment * ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
+    double rotDelivered = rateAdjustment * m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
