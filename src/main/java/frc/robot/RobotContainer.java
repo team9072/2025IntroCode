@@ -14,8 +14,11 @@ import edu.wpi.first.math.kinematics.struct.DifferentialDriveKinematicsStruct;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -24,7 +27,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoRoutine;
 import java.util.List;
+import java.util.function.Supplier;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -177,5 +184,35 @@ public class RobotContainer {
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+  }
+  public class Robot extends TimedRobot {
+    private final AutoChooser autoChooser;
+
+  public Robot() {
+        // Other robot initialization code
+        // ...
+
+        // Create the auto chooser
+        autoChooser = new AutoChooser();
+
+        // Add options to the chooser
+        autoChooser.addRoutine("Example Routine", exampleRoutine());
+        autoChooser.addCmd("Example Auto Command", exampleAutoCommand());
+
+        // Put the auto chooser on the dashboard
+        SmartDashboard.putData("Example Chooser", (Sendable) autoChooser);
+
+        // Schedule the selected auto during the autonomous period
+        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
+    }
+    private Supplier<AutoRoutine> exampleRoutine() {
+          return null;
+      // 
+  }
+
+  private Supplier<Command> exampleAutoCommand() {
+      return null;
+      // 
+  }
   }
 }
