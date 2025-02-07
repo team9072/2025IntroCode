@@ -23,6 +23,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -30,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -215,6 +218,45 @@ public class RobotContainer {
   // ...
     return autoFactory.trajectoryCmd("Forward 180");
   }              
+
+    /* Choreo Choices */
+    public AutoRoutine forwardRightRoutine() {
+      // ...
+    AutoRoutine routine = autoFactory.newRoutine("Forward Right");
+
+    // Load the routine's trajectories
+    AutoTrajectory currTrajectory = routine.trajectory("forwardright");
+
+    // When the routine begins, reset odometry and start the first trajectory (1)
+    routine.active().onTrue(
+        Commands.sequence(
+          currTrajectory.resetOdometry(),
+          currTrajectory.cmd()
+        )
+    );
+
+    return routine;
+  }       
+    
+    
+    public AutoRoutine forward180Routine() {
+    // ...
+    AutoRoutine routine = autoFactory.newRoutine("Forward 180");
+
+    // Load the routine's trajectories
+    AutoTrajectory currTrajectory = routine.trajectory("Forward 180");
+
+    // When the routine begins, reset odometry and start the first trajectory (1)
+    routine.active().onTrue(
+        Commands.sequence(
+          currTrajectory.resetOdometry(),
+          currTrajectory.cmd()
+        )
+    );
+
+    return routine;
+    }       
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
