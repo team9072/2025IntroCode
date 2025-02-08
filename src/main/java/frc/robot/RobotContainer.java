@@ -257,7 +257,59 @@ public class RobotContainer {
     return routine;
     }       
 
+    public AutoRoutine MAlgaetoRSource() {
+      // ...
+      AutoRoutine routine = autoFactory.newRoutine("MAlgae to RSource");
+  
+      // Load the routine's trajectories
+      AutoTrajectory currTrajectory = routine.trajectory("MAlgae to RSource");
+  
+      // When the routine begins, reset odometry and start the first trajectory (1)
+      routine.active().onTrue(
+          Commands.sequence(
+            currTrajectory.resetOdometry(),
+            currTrajectory.cmd()
+          )
+      );
+  
+      return routine;
+      }     
 
+      public AutoRoutine RSourcetoReef4Routine() {
+        // ...
+        AutoRoutine routine = autoFactory.newRoutine("RSource to Reef4");
+    
+        // Load the routine's trajectories
+        AutoTrajectory currTrajectory = routine.trajectory("RSource to Reef4");
+    
+        // When the routine begins, reset odometry and start the first trajectory (1)
+        routine.active().onTrue(
+            Commands.sequence(
+              currTrajectory.resetOdometry(),
+              currTrajectory.cmd()
+            )
+        );
+    
+        return routine;
+        }
+         
+        public AutoRoutine ReefFullLoopRoutine() {
+          // ...
+          AutoRoutine routine = autoFactory.newRoutine("ReefFullLoop");
+      
+          // Load the routine's trajectories
+          AutoTrajectory currTrajectory = routine.trajectory("ReefFullLoop");
+      
+          // When the routine begins, reset odometry and start the first trajectory (1)
+          routine.active().onTrue(
+              Commands.sequence(
+                currTrajectory.resetOdometry(),
+                currTrajectory.cmd()
+              )
+          );
+      
+          return routine;
+          }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
