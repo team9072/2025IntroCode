@@ -46,11 +46,16 @@ public class Robot extends TimedRobot {
 
         // Add options to the chooser
         //      autoChooser.addRoutine("Forward 180",m_robotContainer.Forward() );
-        autoChooser.addCmd("Forward Right", m_robotContainer::forwardRight);
-        autoChooser.addCmd("Forward 180", m_robotContainer::forward180);
+        autoChooser.addRoutine("Forward Right", m_robotContainer::forwardRightRoutine);
+        autoChooser.addRoutine("Forward 180", m_robotContainer::forward180Routine);
+        autoChooser.addRoutine("MAlgae to RSource", m_robotContainer::MAlgaetoRSource);
+        autoChooser.addRoutine("RSource to Reef4", m_robotContainer::RSourcetoReef4Routine);
+        autoChooser.addRoutine("ReefFullLoop", m_robotContainer::ReefFullLoopRoutine);
+
+
 
         // Put the auto chooser on the dashboard
-        SmartDashboard.putData("Example Chooser", autoChooser);
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Schedule the selected auto during the autonomous period
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
