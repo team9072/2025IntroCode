@@ -23,6 +23,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -34,7 +35,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -80,13 +80,7 @@ public class RobotContainer {
         true, false),
     m_robotDrive));
 
-    autoFactory = new AutoFactory(
-      getDrive()::getPose, // A function that returns the current robot pose
-      getDrive()::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
-      getDrive()::followTrajectory, // The drive subsystem trajectory follower 
-      true, // If alliance flipping should be enabled 
-      getDrive() // The drive subsystem
-    ); 
+
       
 
   }
@@ -116,9 +110,9 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kA.value)
         .toggleOnTrue(moveLCommand());
     new JoystickButton(m_driverController, Button.kB.value)
-        .toggleOnTrue( new RunCommand(
+        .whileTrue( new RunCommand(
           () -> 
-          moveLCommandRelative()));
+          scheduleL()));
  
   }
   public Command moveLCommandRelative() {
@@ -163,7 +157,10 @@ public class RobotContainer {
   // Run path following command, then stop at the end.
   return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
 }
-
+public void SequentialCommandGroup(moveLCommandRelative)
+public void scheduleL() {
+  CommandScheduler.getInstance().schedule(moveLCommandRelative());
+}
 
   public Command moveLCommand() {
     System.out.println("Not Relative");
