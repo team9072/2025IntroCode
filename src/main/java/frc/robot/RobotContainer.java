@@ -35,7 +35,7 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 
 import java.util.List;
-
+import java.util.function.Supplier;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -80,7 +80,13 @@ public class RobotContainer {
         true, false),
     m_robotDrive));
 
-
+    autoFactory = new AutoFactory(
+      getDrive()::getPose, // A function that returns the current robot pose
+      getDrive()::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+      getDrive()::followTrajectory, // The drive subsystem trajectory follower 
+      true, // If alliance flipping should be enabled 
+      getDrive() // The drive subsystem
+    ); 
       
 
   }
@@ -157,8 +163,10 @@ public class RobotContainer {
   // Run path following command, then stop at the end.
   return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
 }
-public void SequentialCommandGroup(moveLCommandRelative)
-public void scheduleL() {
+public void scheduleL(){
+  CommandScheduler.getInstance().schedule(moveLCommand());
+}
+public void scheduleLRelative() {
   CommandScheduler.getInstance().schedule(moveLCommandRelative());
 }
 
