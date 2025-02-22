@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
         autoChooser.addRoutine("MAlgae to RSource", m_robotContainer::MAlgaetoRSource);
         autoChooser.addRoutine("RSource to Reef4", m_robotContainer::RSourcetoReef4Routine);
         autoChooser.addRoutine("ReefFullLoop", m_robotContainer::ReefFullLoopRoutine);
+        autoChooser.addRoutine("forwardrighttop", m_robotContainer::forwardrighttop);
 
 
 

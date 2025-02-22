@@ -314,6 +314,23 @@ public void scheduleLRelative() {
           );
       
           return routine;
+        }
+          
+    public AutoRoutine RSourcetoReef8() {
+      // ...
+      AutoRoutine routine = autoFactory.newRoutine("forwardrighttop");
+  
+      // Load the routine's trajectories
+      AutoTrajectory currTrajectory = routine.trajectory("forwardrighttop");
+  
+      // When the routine begins, reset odometry and start the first trajectory (1)
+      routine.active().onTrue(
+          Commands.sequence(
+            currTrajectory.resetOdometry(),
+            currTrajectory.cmd()
+          )
+      );
+      return routine;
           }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
