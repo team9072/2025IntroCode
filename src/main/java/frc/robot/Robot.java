@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
+// import frc.robot.subsystems.Drivetrain; // Commented out as the class does not exist
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -24,7 +25,8 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.math.controller;
+import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
+
 import java.util.List;
 
 import org.opencv.core.Mat;
@@ -35,18 +37,24 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 public class Robot extends TimedRobot {
 
+  private static final double VISION_TURN_kP = 0.1; // Adjust this value as needed
+
   Thread m_visionThread;
     
   
   private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+ 
+  private DriveSubsystem drivetrain;
   private AutoChooser autoChooser;
+  private RobotContainer m_robotContainer;
   private int loopCounter = 0;
+
+  private PhotonCamera camera;
 
   public Robot() {
   // Change this to match the name of your camera
-    PhotonCamera camera = new PhotonCamera("photonvision");
+    camera = new PhotonCamera("photonvision");
     // Query the latest result from PhotonVision
     var result = camera.getLatestResult();
     //Check for targets
@@ -65,7 +73,8 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-   
+        autoChooser = new AutoChooser();
+        drivetrain = new DriveSubsystem();
 
         autoChooser = new AutoChooser();
 
@@ -158,10 +167,28 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    
+ final class Constants {
+
+  // Existing constants
+
+
+
+   static final class Swerve {
+
+      public static final double kMaxLinearSpeed = 3.0; // Example value, adjust as needed
+
+      public static final double kMaxAngularSpeed = 2.0; // Example value, adjust as needed
+
+  }
+
+}
+
    // Calculate drivetrain commands from Joystick values
-   double forward = -controller.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
-   double strafe = -controller.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
-   double turn = -controller.getRightX() * Constants.Swerve.kMaxAngularSpeed;
+   XboxController xboxController = new XboxController(0);
+   double forward = -xboxController.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
+   double strafe = -xboxController.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
+   double turn = -xboxController.getRightX() * Constants.Swerve.kMaxAngularSpeed;
 
    // Read in relevant data from the Camera
    boolean targetVisible = false;
@@ -184,7 +211,7 @@ public class Robot extends TimedRobot {
    }
 
    // Auto-align when requested
-   if (controller.getAButton() && targetVisible) {
+   if (xboxController.getAButton() && targetVisible) {
        // Driver wants auto-alignment to tag 7
        // And, tag 7 is in sight, so we can turn toward it.
        // Override the driver's turn command with an automatic one that turns toward the tag.
@@ -192,7 +219,7 @@ public class Robot extends TimedRobot {
    }
 
    // Command drivetrain motors based on target speeds
-   drivetrain.drive(forward, strafe, turn);
+   drivetrain.drive(forward, strafe, turn,false,true);
 
    // Put debug information to the dashboard
    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
