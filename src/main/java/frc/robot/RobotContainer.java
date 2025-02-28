@@ -100,7 +100,7 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
-  private void configureButtonBindings() {
+  public void configureButtonBindings() {
     new JoystickButton(m_driverController, Button.kLeftStick.value)
         .whileTrue(new RunCommand(
             () -> 
