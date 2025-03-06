@@ -45,20 +45,14 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
  
-  private DriveSubsystem drivetrain;
-  private AutoChooser autoChooser;
-  private RobotContainer m_robotContainer;
-  private int loopCounter = 0;
+private AutoChooser autoChooser;
+private RobotContainer m_robotContainer;
+private int loopCounter = 0;
 
-  private PhotonCamera camera;
+
+
 
   public Robot() {
-  // Change this to match the name of your camera
-    camera = new PhotonCamera("photonvision");
-    // Query the latest result from PhotonVision
-    var result = camera.getLatestResult();
-    //Check for targets
-    
 
 }
   
@@ -73,8 +67,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-        autoChooser = new AutoChooser();
-        drivetrain = new DriveSubsystem();
+
 
         autoChooser = new AutoChooser();
 
@@ -181,49 +174,9 @@ public class Robot extends TimedRobot {
       public static final double kMaxAngularSpeed = 2.0; // Example value, adjust as needed
 
   }
-
+ }
 }
-
-   // Calculate drivetrain commands from Joystick values
-   XboxController xboxController = new XboxController(0);
-   double forward = -xboxController.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
-   double strafe = -xboxController.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
-   double turn = -xboxController.getRightX() * Constants.Swerve.kMaxAngularSpeed;
-
-   // Read in relevant data from the Camera
-   boolean targetVisible = false;
-   double targetYaw = 0.0;
-   var results = camera.getAllUnreadResults();
-   if (!results.isEmpty()) {
-       // Camera processed a new frame since last
-       // Get the last one in the list.
-       var result = results.get(results.size() - 1);
-       if (result.hasTargets()) {
-           // At least one AprilTag was seen by the camera
-           for (var target : result.getTargets()) {
-               if (target.getFiducialId() == 7) {
-                   // Found Tag 7, record its information
-                   targetYaw = target.getYaw();
-                   targetVisible = true;
-               }
-           }
-       }
-   }
-
-   // Auto-align when requested
-   if (xboxController.getAButton() && targetVisible) {
-       // Driver wants auto-alignment to tag 7
-       // And, tag 7 is in sight, so we can turn toward it.
-       // Override the driver's turn command with an automatic one that turns toward the tag.
-       turn = -1.0 * targetYaw * VISION_TURN_kP * Constants.Swerve.kMaxAngularSpeed;
-   }
-
-   // Command drivetrain motors based on target speeds
-   drivetrain.drive(forward, strafe, turn,false,true);
-
-   // Put debug information to the dashboard
-   SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
-  }
+  
 
   @Override
   public void testInit() {
