@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
  
-  private DriveSubsystem drivetrain;
+ 
   private AutoChooser autoChooser;
   private RobotContainer m_robotContainer;
   private int loopCounter = 0;
@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
         autoChooser = new AutoChooser();
-        drivetrain = new DriveSubsystem();
+        
 
         autoChooser = new AutoChooser();
 
@@ -219,7 +219,7 @@ public class Robot extends TimedRobot {
    }
 
    // Command drivetrain motors based on target speeds
-   drivetrain.drive(forward, strafe, turn,false,true);
+   m_robotContainer.getDrive().drive(forward, strafe, turn,false,true);
 
    // Put debug information to the dashboard
    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
@@ -235,8 +235,6 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-
-  
 
 
   
